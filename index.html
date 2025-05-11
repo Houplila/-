@@ -15,10 +15,12 @@
 
 <body style="background-color:#ffd6e5">
     
-  <!--  <div id="koverta">
-  <!-- sadržaj 
-</div> -->
     
+    
+<h1 id="header-text">Duni!!!</h1> 
+<div id="heart">💗</div>
+<div id="card" style="display: none;">🎉 Srećan dan! 💌</div>
+
     
     <div class="wrapper">
   <div class="lid one"></div>
@@ -28,6 +30,108 @@
     <p>tekst</p>
   </div>
 </div>
+    
+    
+    
+    
+    
+<script>
+  let blowCount = 0;
+  let canDetect = true;
+  let startTime = Date.now();
+
+  navigator.mediaDevices.getUserMedia({ audio: true })
+    .then(function(stream) {
+      const context = new AudioContext();
+      const mic = context.createMediaStreamSource(stream);
+      const analyser = context.createAnalyser();
+      analyser.fftSize = 256;
+      const data = new Uint8Array(analyser.frequencyBinCount);
+
+      mic.connect(analyser);
+
+      function checkBlow() {
+        analyser.getByteFrequencyData(data);
+        let maxVolume = Math.max(...data);
+        console.log("Glasnoća:", maxVolume);
+
+        if (Date.now() - startTime < 2000) {
+          requestAnimationFrame(checkBlow);
+          return;
+        }
+
+        if (maxVolume > 100 && canDetect) {
+          canDetect = false;
+          blowCount++;
+
+          const heart = document.getElementById("heart");
+          const header = document.getElementById("header-text");
+
+          // Promeni tekst posle svakog duvanja
+          if (blowCount === 1) {
+            header.textContent = "Samo napred!";
+          } else if (blowCount === 2) {
+            header.textContent = "Još malo!";
+          }
+
+          heart.classList.add("shake");
+          setTimeout(() => heart.classList.remove("shake"), 300);
+
+          if (blowCount === 3) {
+            heart.classList.add("boom");
+            header.classList.add("boom");
+
+            setTimeout(() => {
+              heart.style.display = "none";
+              header.style.display = "none";
+              document.getElementById("card").style.display = "block";
+            }, 500);
+          }
+
+          // 2 sekunde pauze pre ponovnog slušanja
+          setTimeout(() => {
+            canDetect = true;
+          }, 3000);
+        }
+
+        requestAnimationFrame(checkBlow);
+      }
+
+      checkBlow();
+    })
+    .catch(function(err) {
+      alert("Dozvoli mikrofon da bi animacija radila 🎤");
+    });
+</script>
+
+
+
+
+  
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
     
     
